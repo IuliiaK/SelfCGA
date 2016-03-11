@@ -10,7 +10,6 @@
 using namespace std;
 
 //==============================================================================
-//Функция рандома:
 int RandomValue(int MaxValue)
 {
 	long int r;
@@ -18,22 +17,20 @@ int RandomValue(int MaxValue)
 	return r;
 }
 //------------------------------------------------------------------------------
-//Функция подсчета длинны гена:
 int LengthGen(float MinValue, float MaxValue, float Accuracy)
 {
 	int h, Length;
-	h = (MaxValue - MinValue)/(Accuracy/10.);   //Интервал разбивается на h равных частей.
+	h = (MaxValue - MinValue)/(Accuracy/10.);   
 	Length = log(h+1.)/log(2.)+1.;
 	return Length;
 }
 //------------------------------------------------------------------------------
-//Функция подсчета Y:
 double FunctionY(int NumberOfFunction, vector <double> &XVector)
 {
 	double Y;
 	switch (NumberOfFunction)
 	{
-		case 0:   		//Функция Растригина
+		case 0:   		
 		{
 			Y = 0.1*XVector[0]*XVector[0]+0.1*XVector[1]*XVector[1]-4.0*cos(0.8*XVector[0])-4.0*cos(0.8*XVector[1])+8.0;
 			break;
@@ -42,14 +39,13 @@ double FunctionY(int NumberOfFunction, vector <double> &XVector)
 	return Y;
 }
 //------------------------------------------------------------------------------
-//Функция подсчета Y-Yist:
 bool FunctionIsSolved(int NumberOfFunction, vector <double> &XVector, float Accuracy)
 {
 	bool IsSolved;
 	IsSolved = false;
 	switch (NumberOfFunction)
 	{
-		case 0:   		//Функция Растригина
+		case 0:   		
 		{
 			if ((fabs(XVector[0]-0.0) < Accuracy) && (fabs(XVector[1]-0.0) < Accuracy))
 			{
@@ -61,27 +57,22 @@ bool FunctionIsSolved(int NumberOfFunction, vector <double> &XVector, float Accu
 	return IsSolved;
 }
 //==============================================================================
-//Класс Индивид:
 class CIndivid
 {
 	public:
-		//Переменные класса:
 			int LengthValue, NumberOfVariables;
-			int SType, RType, MType;				//самонастройка: тип селекции, рек-ии и мутации
+			int SType, RType, MType;				
 			float MinValue, MaxValue, AccuracyValue;
 			double YValue, FitnessValue;
 
-		//Векторы класса:
-			std::vector <bool> GenotypeVector;     //вектор генотипа, двоичное представление решения
-			std::vector <double> XVector;          //вектор переменных, вещ-ое представление решения
+			std::vector <bool> GenotypeVector;     
+			std::vector <double> XVector;          
 
-		//Функции класса:
 			CIndivid::CIndivid(float MIN, float MAX, float Accuracy, int NumOfVars, int Length);
 			CIndivid::~CIndivid();
 			void operator = (CIndivid A);
-			void FunctionValue(int NumberOfFunction); 	//расчет иксов и игрика
-			void Fitness(double YMinValue);			//расчет пригодности
-			//void Operators(double SProbability, double RProbability, double MProbability);                         //самонастрока - выбор операторов
+			void FunctionValue(int NumberOfFunction); 	
+			void Fitness(double YMinValue);			
 			void Mutation(double Probability);
 };
 //------------------------------------------------------------------------------
@@ -177,29 +168,25 @@ void CIndivid::Mutation(double Probability)
 	}
 }
 //==============================================================================
-//Класс Популяция:
 class CPopulation
 {
 	public:
-			//Переменные класса:
 			int PopulationSize, NumberOfVariables, LengthValue;
 			int CurrentGeneration, BestGeneration;
 			int Selections, Recombinations, Mutations;
 			float MinValue, MaxValue, AccuracyValue;
 			double MinY;
 
-			//Векторы класса:
-			std::vector <CIndivid> PopulationVector;		//Вектор индивидов
-			std::vector <CIndivid> ParentsVector;           //Вектор родителей
+			std::vector <CIndivid> PopulationVector;		
+			std::vector <CIndivid> ParentsVector;           
 			std::vector <CIndivid> OffspringsPopulation;
-			std::vector <double> BestFitnessVector;         //Вектор лучших значений пригодности (на каждом поколении)
-			std::vector <double> AverageFitnessVector;      //Вектор средних значений пригодности (на каждом поколении)
-			std::vector <double> WorstFitnessVector;        //Вектор худших значений пригодности (на кождом поколении)
-			std::vector <double> SelectionProbability;		// 0 - турнирная, 1 - пропорциональная, 2 - ранговая
-			std::vector <double> RecombinationProbability;  // 0 - одноточ, 1 - двухточ, 3 - равномерное
-			std::vector <double> MutationProbability;       // 0 - слабая, 2 - средняя, 3 - сильная
+			std::vector <double> BestFitnessVector;         
+			std::vector <double> AverageFitnessVector;      
+			std::vector <double> WorstFitnessVector;       
+			std::vector <double> SelectionProbability;		
+			std::vector <double> RecombinationProbability;  
+			std::vector <double> MutationProbability;       
 			
-			//Функции класса:
 			CPopulation::CPopulation(int SizeOfPopulation, float MIN, float MAX, float Accuracy, int NumOfVars, int Length, int NumOfSs, int NumOfRs, int NumOfMs);
 			CPopulation::~CPopulation();
 			void Fitness(int NumberOfFunction, vector <CIndivid> &Individs);
@@ -207,7 +194,7 @@ class CPopulation
 			void Selection();
 			void Recombination();
 			void Mutation();
-			void ComputeProbs(int NumberOfGenerations);							//самонастройка - пересчет вер-тей
+			void ComputeProbs(int NumberOfGenerations);							
 			void NewGeneration(int TypeOfForming);
 };
 //------------------------------------------------------------------------------
@@ -230,22 +217,22 @@ CPopulation::CPopulation(int SizeOfPopulation, float MIN, float MAX, float Accur
 	{
 		PopulationVector.push_back(CIndivid(MinValue, MaxValue, AccuracyValue, NumberOfVariables, LengthValue));
 	}
-	PopulationVector[PopulationSize].FitnessValue = 0.;			//лучший в поколении
-	PopulationVector[PopulationSize+1].FitnessValue = 0.;       //лучший за все время
+	PopulationVector[PopulationSize].FitnessValue = 0.;			
+	PopulationVector[PopulationSize+1].FitnessValue = 0.;       
 
-	double s,r,m;            									//установка равных вероятностей:
+	double s,r,m;            									
 	s = 1./Selections;
 	r = 1./Recombinations;
 	m = 1./Mutations;
-	for (int i = 0; i < Selections; i++)                        //селекции
+	for (int i = 0; i < Selections; i++)                        
 	{
 		SelectionProbability.push_back(s);
 	}
-	for (int i = 0; i < Recombinations; i++)                    //рекомбинации
+	for (int i = 0; i < Recombinations; i++)                    
 	{
 		RecombinationProbability.push_back(r);
 	}
-	for (int i = 0; i < Mutations; i++)                         //мутации
+	for (int i = 0; i < Mutations; i++)                         
 	{
 		MutationProbability.push_back(m);
 	}
@@ -300,18 +287,18 @@ void CPopulation::Fitness(int NumberOfFunction, vector <CIndivid> &Individs)
 	TotalFitness = 0.;
 	for (int i = 0; i < PopulationSize; i++)
 	{
-		TotalFitness += PopulationVector[i].FitnessValue;		//общая пригодность
+		TotalFitness += PopulationVector[i].FitnessValue;		
 	}
-	AverageFitness = TotalFitness/PopulationSize;				//средняя пригодность
+	AverageFitness = TotalFitness/PopulationSize;			
 	AverageFitnessVector.push_back(AverageFitness);
-	BestFitness = PopulationVector[PopulationSize].FitnessValue;	//лучшая пригодность
+	BestFitness = PopulationVector[PopulationSize].FitnessValue;	
 	BestFitnessVector.push_back(BestFitness);
 	WorstFitness = PopulationVector[0].FitnessValue;
 	for (int i = 1; i < PopulationSize; i++)
 	{
 		if (PopulationVector[i].FitnessValue < WorstFitness)
 		{
-			WorstFitness = PopulationVector[i].FitnessValue;		//худшая пригодность
+			WorstFitness = PopulationVector[i].FitnessValue;		
 		}
 	}
 	WorstFitnessVector.push_back(WorstFitness);*/
@@ -337,18 +324,18 @@ void CPopulation::StatFitness()
 	TotalFitness = 0.;
 	for (int i = 0; i < PopulationSize; i++)
 	{
-		TotalFitness += PopulationVector[i].FitnessValue;		//общая пригодность
+		TotalFitness += PopulationVector[i].FitnessValue;	
 	}
-	AverageFitness = TotalFitness/PopulationSize;				//средняя пригодность
+	AverageFitness = TotalFitness/PopulationSize;			
 	AverageFitnessVector.push_back(AverageFitness);
-	BestFitness = PopulationVector[PopulationSize].FitnessValue;	//лучшая пригодность
+	BestFitness = PopulationVector[PopulationSize].FitnessValue;	
 	BestFitnessVector.push_back(BestFitness);
 	WorstFitness = PopulationVector[0].FitnessValue;
 	for (int i = 1; i < PopulationSize; i++)
 	{
 		if (PopulationVector[i].FitnessValue < WorstFitness)
 		{
-			WorstFitness = PopulationVector[i].FitnessValue;		//худшая пригодность
+			WorstFitness = PopulationVector[i].FitnessValue;	
 		}
 	}
 	WorstFitnessVector.push_back(WorstFitness);
@@ -448,7 +435,7 @@ void CPopulation::Selection()
 		//fout<<"\n"<<i<<"\t"<<ParentsSelection[i];
 		switch (OffspringsPopulation[i].SType)
 		{
-			case 0:			//турнирная
+			case 0:		
 			{
 				//fout<<" - tournament";
 				TournamentSize = 2;
@@ -502,7 +489,7 @@ void CPopulation::Selection()
 				}
 				break;
 			}
-			case 1:			//турнирная
+			case 1:		
 			{
 				//fout<<" - tournament";
 				TournamentSize = 5;
@@ -556,7 +543,7 @@ void CPopulation::Selection()
 				}
 				break;
 			}
-			case 2:			//турнирная
+			case 2:		
 			{
 				//fout<<" - tournament";
 				TournamentSize = 7;
@@ -610,7 +597,7 @@ void CPopulation::Selection()
 				}
 				break;
 			}
-			case 3:			//пропорциональная
+			case 3:		
 			{
 				//fout<<" - proportional\t";
 
@@ -659,7 +646,7 @@ void CPopulation::Selection()
 				}
 				break;
 			}
-			case 4:			//ранговая
+			case 4:		
 			{
 				//fout<<" - rank\n\t";
 
@@ -808,7 +795,7 @@ void CPopulation::Recombination()
 	{
 		switch (OffspringsPopulation[i/2.].RType) 
 		{
-			case 0:			//одноточечное
+			case 0:		
 			{
 				int BreakPoint, rv;
 				std::vector <CIndivid> Offsprings;
@@ -872,7 +859,7 @@ void CPopulation::Recombination()
 				fout<<"\n";*/
 				break;
 			}
-			case 1:         //двухточечное
+			case 1:      
 			{
 				int BreakPoint1, BreakPoint2, rv;
 				std::vector <CIndivid> Offsprings;
@@ -957,7 +944,7 @@ void CPopulation::Recombination()
 				fout<<"\n";*/
 				break;
 			}
-			case 2:         //равномерное
+			case 2:      
 			{
 				double rv;
 
@@ -1285,7 +1272,6 @@ void CPopulation::NewGeneration(int TypeOfForming)
 int main (void)
 {
 	srand((unsigned)time( NULL ));
-	//Переменные:
 	int PopulationSize, NumberOfVariables, TournamentSize, NumberOfGenerations, NumberOfRuns;
 	int TheBestGeneration;
 	int Length;
@@ -1326,12 +1312,12 @@ int main (void)
 	NumR = 3;
 	NumM = 3;
 
-	NumberOfVariables = 2;		//для функции растригина
+	NumberOfVariables = 2;	
 
 	fout.open("test.txt", ios::out);
 	fout.close();
-	//Проверка
-	Length = LengthGen (MinV, MaxV, AccuracyValue);		//вычисленние длинны вектора генотип
+	
+	Length = LengthGen (MinV, MaxV, AccuracyValue);		
 	CPopulation P (PopulationSize, MinV, MaxV, AccuracyValue, NumberOfVariables, Length, NumS, NumR, NumM);
 	for (int g = 0; g < NumberOfGenerations; g++)
 	{
